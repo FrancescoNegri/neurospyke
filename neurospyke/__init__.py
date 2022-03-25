@@ -1,3 +1,3 @@
-from . import visualization
+from . import spikes, visualization
 
-__all__ = ['visualization']
+__all__ = ['spikes', 'visualization']
