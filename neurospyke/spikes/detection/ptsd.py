@@ -2,14 +2,9 @@ import numpy as np
 from scipy.signal import argrelmax, argrelmin
 from ... import utils
 
-def PTSD(data, sampling_time, threshold, refractory_period, peak_lifetime_period, overshoot):
+def PTSD_samples(data, threshold, refractory_period, peak_lifetime_period, overshoot):
     # Cast data type to float
     data = data.astype(np.float64)
-
-    # Convert all parameters from time-domain to samples
-    refractory_period = utils.get_in_samples(refractory_period, sampling_time)
-    peak_lifetime_period = utils.get_in_samples(peak_lifetime_period, sampling_time)
-    overshoot = utils.get_in_samples(overshoot, sampling_time)
 
     spikes_idxs = []
     spikes_values = []
@@ -59,4 +54,14 @@ def PTSD(data, sampling_time, threshold, refractory_period, peak_lifetime_period
 
     spikes_idxs = np.array(spikes_idxs, dtype=np.int64)
     spikes_values = np.array(spikes_values, dtype=np.float64)
+    return spikes_idxs, spikes_values
+
+def PTSD(data, sampling_time, threshold, refractory_period, peak_lifetime_period, overshoot):
+    # Convert all parameters from time-domain to samples
+    refractory_period = utils.get_in_samples(refractory_period, sampling_time)
+    peak_lifetime_period = utils.get_in_samples(peak_lifetime_period, sampling_time)
+    overshoot = utils.get_in_samples(overshoot, sampling_time)
+
+    spikes_idxs, spikes_values = PTSD_samples(data, threshold, refractory_period, peak_lifetime_period, overshoot)
+
     return spikes_idxs, spikes_values
