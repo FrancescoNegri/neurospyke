@@ -21,6 +21,8 @@ def differential_threshold_samples(data, threshold, window_length):
             spikes_idxs.append(np.argmax(window_data)+window_idx)
             spikes_values.append(max_value)
 
+    spikes_idxs = np.array(spikes_idxs, dtype=np.int64)
+    spikes_values = np.array(spikes_values, dtype=np.float64)
     return spikes_idxs, spikes_values
 
 def differential_threshold(data, sampling_time, threshold, window_length):
