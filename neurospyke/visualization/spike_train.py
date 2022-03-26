@@ -23,7 +23,7 @@ def plot_spike_train(spikes_idxs, sampling_time, channel_labels=None, channel_he
     
     for channel_idx in np.arange(n_channels):
         for spike_idx in np.arange(len(spikes_idxs[channel_idx])):
-            y = [channel_idx*channel_height, channel_idx*channel_height + channel_height*0.75]
+            y = [channel_idx * channel_height, channel_idx * channel_height + channel_height * 0.75]
             x = [spikes_times[channel_idx][spike_idx], spikes_times[channel_idx][spike_idx]]
             plt.plot(x, y, color='black', linewidth=0.5)
 
@@ -32,15 +32,15 @@ def plot_spike_train(spikes_idxs, sampling_time, channel_labels=None, channel_he
     plt.ylabel('Channels')
 
     ax = plt.gca()
-    ax.set_xlim(0, np.amax([spikes_times[channel_idx][-1] for channel_idx in np.arange(n_channels)])*1.01)
+    ax.set_xlim(0, np.amax([spikes_times[channel_idx][-1] for channel_idx in np.arange(n_channels)]) * 1.01)
     ax.set_ylim(0, channel_height * n_channels)
     
-    yticks = np.arange(channel_height/2, n_channels*channel_height + channel_height/2, channel_height)
+    yticks = np.arange(channel_height / 2, n_channels * channel_height + channel_height / 2, channel_height)
     ax.set_yticks(yticks)
     if channel_labels is None or (len(channel_labels) != n_channels):
         channel_labels = [str(i) for i in np.arange(1, n_channels + 1, 1)]
     ax.set_yticklabels(channel_labels)
-    ax.tick_params(axis='y', which='both',length=0)
+    ax.tick_params(axis='y', which='both', length=0)
     
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
