@@ -50,7 +50,7 @@ def plot_spike_train(spikes_idxs, sampling_time, channel_labels=None, plot_title
     ax.set_xlim(0, np.amax([spikes_times[channel_idx][-1] for channel_idx in np.arange(n_channels)]) * 1.01)
     ax.set_ylim(0, channel_height * n_channels)
     
-    yticks = np.arange(channel_height / 2, n_channels * channel_height + channel_height / 2, channel_height)
+    yticks = np.arange(channel_height / 2, round(n_channels * channel_height + channel_height / 2, 8), channel_height)
     ax.set_yticks(yticks)
     if channel_labels is None or (len(channel_labels) != n_channels):
         channel_labels = [str(i) for i in np.arange(1, n_channels + 1, 1)]
