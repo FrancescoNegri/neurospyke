@@ -1,6 +1,6 @@
 import numpy as np
-from ... import utils
 from scipy.signal import find_peaks
+from ... import utils
 
 def hard_threshold_local_maxima_samples(data:np.ndarray, threshold:float, refractory_period:int, use_abs:bool=False):
     '''
