@@ -24,6 +24,10 @@ def hard_threshold_local_maxima_samples(data:np.ndarray, threshold:float, refrac
         An array containing all the indices of detected spikes.
     spikes_values numpy.ndarray
         An array containing all the values (i.e. amplitude) of detected spikes.
+    
+    References
+    ----------
+    [1] S. Gibson et al. “Technology-Aware Algorithm Design for Neural Spike Detection, Feature Extraction, and Dimensionality Reduction.” IEEE Transactions on Neural Systems and Rehabilitation Engineering, vol. 18, no. 5, 2010, pp. 469-478., https://doi.org/10.1109/tnsre.2010.2051683
     '''
     # Cast data type to float
     data = data.astype(np.float64)
@@ -62,6 +66,10 @@ def hard_threshold_local_maxima(data:np.ndarray, sampling_time:float, threshold:
         An array containing all the indices of detected spikes.
     spikes_values numpy.ndarray
         An array containing all the values (i.e. amplitude) of detected spikes.
+
+    References
+    ----------
+    [1] S. Gibson et al. “Technology-Aware Algorithm Design for Neural Spike Detection, Feature Extraction, and Dimensionality Reduction.” IEEE Transactions on Neural Systems and Rehabilitation Engineering, vol. 18, no. 5, 2010, pp. 469-478., https://doi.org/10.1109/tnsre.2010.2051683
     '''
     # Convert all parameters from time-domain to samples
     refractory_period = utils.get_in_samples(refractory_period, sampling_time)

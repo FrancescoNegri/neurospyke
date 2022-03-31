@@ -23,6 +23,10 @@ def differential_threshold_samples(data:np.ndarray, threshold:float, window_leng
         An array containing all the indices of detected spikes.
     spikes_values numpy.ndarray
         An array containing all the values (i.e. amplitude) of detected spikes.
+    
+    References
+    ----------
+    [1] A. Maccione et al. “A novel algorithm for precise identification of spikes in extracellularly recorded neuronal signals.” Journal of neuroscience methods vol. 177,1 (2009): 241-9. https://doi.org/10.1016/j.jneumeth.2008.09.026
     '''
     # Cast data type to float
     data = data.astype(np.float64)
@@ -69,6 +73,10 @@ def differential_threshold(data:np.ndarray, sampling_time:float, threshold:float
         An array containing all the indices of detected spikes.
     spikes_values numpy.ndarray
         An array containing all the values (i.e. amplitude) of detected spikes.
+    
+    References
+    ----------
+    [1] A. Maccione et al. “A novel algorithm for precise identification of spikes in extracellularly recorded neuronal signals.” Journal of neuroscience methods vol. 177,1 (2009): 241-9. https://doi.org/10.1016/j.jneumeth.2008.09.026
     '''
     # Convert all parameters from time-domain to samples
     window_length = utils.get_in_samples(window_length, sampling_time)
