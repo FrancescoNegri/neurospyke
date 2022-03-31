@@ -2,7 +2,28 @@ import math
 import numpy as np
 from ... import utils
 
-def differential_threshold_samples(data, threshold, window_length):
+def differential_threshold_samples(data:np.ndarray, threshold:float, window_length:int):
+    '''
+    Use the Differential Threshold algorithm to detect spikes,
+    with parameters specified as samples.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        The array of recorded data.
+    threshold : float
+        A threshold employed by the algorithm to detect a spike.
+    window_length : int
+        The length for the detection window to employ while looking
+        for spikes to detect, expressed in samples.
+    
+    Returns
+    -------
+    spikes_idxs : numpy.ndarray
+        An array containing all the indices of detected spikes.
+    spikes_values numpy.ndarray
+        An array containing all the values (i.e. amplitude) of detected spikes.
+    '''
     # Cast data type to float
     data = data.astype(np.float64)
 
@@ -25,7 +46,30 @@ def differential_threshold_samples(data, threshold, window_length):
     spikes_values = np.array(spikes_values, dtype=np.float64)
     return spikes_idxs, spikes_values
 
-def differential_threshold(data, sampling_time, threshold, window_length):
+def differential_threshold(data:np.ndarray, sampling_time:float, threshold:float, window_length:float):
+    '''
+    Use the Differential Threshold algorithm to detect spikes,
+    with parameters specified in the time domain.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        The array of recorded data.
+    sampling_time : float
+        The sampling time for the recorded data.
+    threshold : float
+        A threshold employed by the algorithm to detect a spike.
+    window_length : float
+        The length for the detection window to employ while looking
+        for spikes to detect, expressed in seconds.
+    
+    Returns
+    -------
+    spikes_idxs : numpy.ndarray
+        An array containing all the indices of detected spikes.
+    spikes_values numpy.ndarray
+        An array containing all the values (i.e. amplitude) of detected spikes.
+    '''
     # Convert all parameters from time-domain to samples
     window_length = utils.get_in_samples(window_length, sampling_time)
     
