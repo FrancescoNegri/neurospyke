@@ -2,7 +2,9 @@ import numpy as np
 from ... import utils
 from scipy.signal import find_peaks
 
-def hard_threshold_local_maxima_samples(data, threshold, refractory_period, use_abs=False):
+    # Cast data type to float
+    data = data.astype(np.float64)
+
     if use_abs is True:
         data = abs(data)
     
