@@ -2,7 +2,37 @@ import numpy as np
 from scipy.signal import argrelmax, argrelmin
 from ... import utils
 
-def PTSD_samples(data, threshold, refractory_period, peak_lifetime_period, overshoot):
+def PTSD_samples(data:np.ndarray, threshold:float, refractory_period:int, peak_lifetime_period:int, overshoot:int):
+    '''
+    Use the Precision Timing Spike Detection (PTSD) algorithm to detect spikes,
+    with parameters specified as samples.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        The array of recorded data.
+    threshold : float
+        A threshold employed by the algorithm to detect a spike.
+    refractory_period : int
+        The detection algorithm refractory period, expressed in samples.
+    peak_lifetime_period : int
+        The maximum duration of a spike, between its positive and
+        negative peaks. Expressed in samples.
+    overshoot : int
+        An extra time interval extending the peak lifetime period in case
+        no spike is found inside it, expressed in samples.
+    
+    Returns
+    -------
+    spikes_idxs : numpy.ndarray
+        An array containing all the indices of detected spikes.
+    spikes_values numpy.ndarray
+        An array containing all the values (i.e. amplitude) of detected spikes.
+    
+    References
+    ----------
+    [1] A. Maccione et al. “A novel algorithm for precise identification of spikes in extracellularly recorded neuronal signals.” Journal of neuroscience methods vol. 177,1 (2009): 241-9. https://doi.org/10.1016/j.jneumeth.2008.09.026
+    '''
     # Cast data type to float
     data = data.astype(np.float64)
 
@@ -56,7 +86,39 @@ def PTSD_samples(data, threshold, refractory_period, peak_lifetime_period, overs
     spikes_values = np.array(spikes_values, dtype=np.float64)
     return spikes_idxs, spikes_values
 
-def PTSD(data, sampling_time, threshold, refractory_period, peak_lifetime_period, overshoot):
+def PTSD(data:np.ndarray, sampling_time:float, threshold:float, refractory_period:float, peak_lifetime_period:float, overshoot:float):
+    '''
+    Use the Precision Timing Spike Detection (PTSD) algorithm to detect spikes,
+    with parameters specified in the time domain.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        The array of recorded data.
+    sampling_time : float
+        The sampling time for the recorded data.
+    threshold : float
+        A threshold employed by the algorithm to detect a spike.
+    refractory_period : float
+        The detection algorithm refractory period, expressed in seconds.
+    peak_lifetime_period : float
+        The maximum duration of a spike, between its positive and
+        negative peaks. Expressed in seconds.
+    overshoot : float
+        An extra time interval extending the peak lifetime period in case
+        no spike is found inside it, expressed in seconds.
+    
+    Returns
+    -------
+    spikes_idxs : numpy.ndarray
+        An array containing all the indices of detected spikes.
+    spikes_values numpy.ndarray
+        An array containing all the values (i.e. amplitude) of detected spikes.
+    
+    References
+    ----------
+    [1] A. Maccione et al. “A novel algorithm for precise identification of spikes in extracellularly recorded neuronal signals.” Journal of neuroscience methods vol. 177,1 (2009): 241-9. https://doi.org/10.1016/j.jneumeth.2008.09.026
+    '''
     # Convert all parameters from time-domain to samples
     refractory_period = utils.get_in_samples(refractory_period, sampling_time)
     peak_lifetime_period = utils.get_in_samples(peak_lifetime_period, sampling_time)
