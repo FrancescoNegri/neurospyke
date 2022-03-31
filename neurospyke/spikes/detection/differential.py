@@ -4,8 +4,8 @@ from ... import utils
 
 def differential_threshold_samples(data:np.ndarray, threshold:float, window_length:int):
     '''
-    Use the Differential Threshold algorithm to detect spikes,
-    with parameters specified as samples.
+    Use the Spike Detection Differential Threshold (SDDT) algorithm
+    to detect spikes, with parameters specified as samples.
 
     Parameters
     ----------
@@ -52,8 +52,8 @@ def differential_threshold_samples(data:np.ndarray, threshold:float, window_leng
 
 def differential_threshold(data:np.ndarray, sampling_time:float, threshold:float, window_length:float):
     '''
-    Use the Differential Threshold algorithm to detect spikes,
-    with parameters specified in the time domain.
+    Use the Spike Detection Differential Threshold (SDDT) algorithm
+    to detect spikes, with parameters specified in the time domain.
 
     Parameters
     ----------
