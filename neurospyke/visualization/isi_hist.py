@@ -7,7 +7,6 @@ def plot_ISI_hist(ISI, bins, plot_title='ISI Histogram', range=None):
     if range is not None:
         range = (range[0], range[1])
 
-    print(range)
     plt.hist(ISI, bins=bins, range=range)
     
     plt.title(plot_title)
