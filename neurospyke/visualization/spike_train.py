@@ -20,6 +20,7 @@ def _parse_kwargs(n_channels, **kwargs):
         {'key': 'color', 'default': 'black', 'type': None},
         {'key': 'dpi', 'default': 300, 'type': None},
         {'key': 'linewidth', 'default': 0.5, 'type': None},
+        {'key': 'plot_title', 'default': 'Spike Train', 'type': str},
         {'key': 'vertical_spacing', 'default': 0.25, 'type': float},
         {'key': 'xlim', 'default': None, 'type': None}
     ]
@@ -47,7 +48,7 @@ def _parse_parameters(spikes_idxs, sampling_time, channel_labels):
 
     return spikes_idxs, sampling_time, channel_labels
 
-def plot_spike_train(spikes_idxs, sampling_time, channel_labels=None, plot_title='Spike Train', **kwargs):    
+def plot_spike_train(spikes_idxs, sampling_time, channel_labels=None, **kwargs):    
     spikes_idxs, sampling_time, channel_labels = _parse_parameters(spikes_idxs, sampling_time, channel_labels)
     n_channels = spikes_idxs.shape[0]
 
@@ -64,7 +65,7 @@ def plot_spike_train(spikes_idxs, sampling_time, channel_labels=None, plot_title
             x = [spikes_times[channel_idx][spike_idx], spikes_times[channel_idx][spike_idx]]
             plt.plot(x, y, color=kwargs.get('color'), linewidth=kwargs.get('linewidth'))
 
-    plt.title(plot_title)
+    plt.title(kwargs.get('plot_title'))
     plt.xlabel('Time (s)')
     plt.ylabel('Channels')
 
