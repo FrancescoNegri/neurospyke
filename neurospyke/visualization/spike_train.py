@@ -1,18 +1,40 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def _parse_kwargs(n_channels, **kwargs):
-    if 'channel_height' not in kwargs:
-        kwargs['channel_height'] = 0.5
-    if 'dpi' not in kwargs:
-        kwargs['dpi'] = 300
-    if 'figsize' not in kwargs:
-        kwargs['figsize'] = (16, kwargs.get('channel_height') * n_channels)
-    if 'linewidth' not in kwargs:
-        kwargs['linewidth'] = 0.5
-    if 'vertical_spacing' not in kwargs:
-        kwargs['vertical_spacing'] = 0.25
+def _check_kwargs_list(kwargs_list, **kwargs):
+    for kwarg in kwargs_list:
+        kwargs[kwarg['key']] = kwargs.get(kwarg['key'], kwarg['default'])
 
+        if kwarg['type'] is not None:
+            try:
+                kwargs[kwarg['key']] = kwarg['type'](kwargs.get(kwarg['key']))
+            except:
+                raise TypeError("'" + kwarg['key'] + "' expected to be '" + kwarg['type'].__name__ + "', received '" + str(type(kwargs.get(kwarg['key'])).__name__) + "'")
+
+    return kwargs
+
+def _parse_kwargs(n_channels, **kwargs):
+    # Basic checks
+    kwargs_list = [
+        {'key': 'channel_height', 'default': 0.5, 'type': float},
+        {'key': 'color', 'default': 'black', 'type': None},
+        {'key': 'dpi', 'default': 300, 'type': None},
+        {'key': 'linewidth', 'default': 0.5, 'type': None},
+        {'key': 'vertical_spacing', 'default': 0.25, 'type': float},
+        {'key': 'xlim', 'default': None, 'type': None}
+    ]
+    kwargs = _check_kwargs_list(kwargs_list, **kwargs)
+
+    # Additional checks
+    if kwargs.get('vertical_spacing') < 0 or kwargs.get('vertical_spacing') > 1:
+        raise ValueError("'vertical_spacing' expected to be a value between 0 and 1, received " + str(kwargs.get('vertical_spacing')))
+    
+    # Dependant checks
+    kwargs_list = [
+        {'key': 'figsize', 'default': (16, kwargs.get('channel_height') * n_channels), 'type': None}
+    ]
+    kwargs = _check_kwargs_list(kwargs_list, **kwargs)
+    
     return kwargs
 
 def _parse_parameters(spikes_idxs, sampling_time, channel_labels):
