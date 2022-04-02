@@ -16,4 +16,7 @@ def plot_ISI_hist(ISI, bins, plot_title='ISI Histogram', range=None):
     ax = plt.gca()
     ax.set_xlim([0, None])
 
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
     return
