@@ -17,8 +17,8 @@ def plot_PTSH(spikes_count, sampling_time, is_barplot=False, plot_title='PTSH Hi
     plt.ylabel('Spikes Count')
 
     ax = plt.gca()
-    ax.set_xlim([0, None])
-    ax.set_ylim([0, None])
+    ax.set_xlim(0, None)
+    ax.set_ylim(0, None)
 
     xticks = np.array(ax.get_xticks())
     xticklabels = np.array([np.round(label * sampling_time, 5) for label in xticks])
