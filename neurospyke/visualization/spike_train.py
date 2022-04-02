@@ -62,14 +62,18 @@ def plot_spike_train(spikes_idxs, sampling_time, channel_labels=None, plot_title
         for spike_idx in np.arange(len(spikes_idxs[channel_idx])):
             y = [channel_idx * channel_height, channel_idx * channel_height + channel_height * (1 - kwargs.get('vertical_spacing'))]
             x = [spikes_times[channel_idx][spike_idx], spikes_times[channel_idx][spike_idx]]
-            plt.plot(x, y, color='black', linewidth=kwargs.get('linewidth'))
+            plt.plot(x, y, color=kwargs.get('color'), linewidth=kwargs.get('linewidth'))
 
     plt.title(plot_title)
     plt.xlabel('Time (s)')
     plt.ylabel('Channels')
 
     ax = plt.gca()
-    ax.set_xlim(0, np.amax([spikes_times[channel_idx][-1] for channel_idx in np.arange(n_channels)]) * 1.01)
+    if kwargs.get('xlim') is None:
+        ax.set_xlim(0, np.amax([spikes_times[channel_idx][-1] for channel_idx in np.arange(n_channels)]) * 1.01)
+    else:
+        xlim = kwargs.get('xlim')
+        ax.set_xlim(xlim[0], xlim[1])
     ax.set_ylim(0, channel_height * n_channels)
     
     yticks = np.arange(channel_height / 2, round(n_channels * channel_height + channel_height / 2, 8), channel_height)
