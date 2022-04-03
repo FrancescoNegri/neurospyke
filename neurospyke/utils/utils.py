@@ -6,10 +6,13 @@ def check_kwargs_list(kwargs_list, **kwargs):
         kwargs[kwarg['key']] = kwargs.get(kwarg['key'], kwarg['default'])
 
         if kwarg['type'] is not None:
-            try:
-                kwargs[kwarg['key']] = kwarg['type'](kwargs.get(kwarg['key']))
-            except:
-                raise TypeError("'" + kwarg['key'] + "' expected to be '" + kwarg['type'].__name__ + "', received '" + str(type(kwargs.get(kwarg['key'])).__name__) + "'")
+            if (kwargs.get(kwarg['key']) is None) and (kwarg['default'] is None):
+                pass
+            else:
+                try:
+                    kwargs[kwarg['key']] = kwarg['type'](kwargs.get(kwarg['key']))
+                except:
+                    raise TypeError("'" + kwarg['key'] + "' expected to be '" + kwarg['type'].__name__ + "', received '" + str(type(kwargs.get(kwarg['key'])).__name__) + "'")
 
     return kwargs
 
