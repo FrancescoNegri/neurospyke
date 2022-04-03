@@ -14,7 +14,7 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def plot_ISI_hist(ISI, bins, **kwargs):
+def plot_ISIH(ISI, bins, **kwargs):
     kwargs = _parse_kwargs(**kwargs)
     plt.figure(figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
 
