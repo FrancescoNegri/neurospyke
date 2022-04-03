@@ -22,7 +22,7 @@ def _parse_kwargs(spikes_times, n_channels, **kwargs):
     
     # Dependant checks
     kwargs_list = [
-        {'key': 'figsize', 'default': (16, kwargs.get('channel_height') * n_channels), 'type': None}
+        {'key': 'figsize', 'default': (16, kwargs.get('channel_height') * n_channels), 'type': tuple}
     ]
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
     
