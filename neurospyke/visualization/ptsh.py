@@ -10,7 +10,7 @@ def _parse_kwargs(**kwargs):
         {'key': 'figsize', 'default': (6, 3), 'type': tuple},
         {'key': 'is_barplot', 'default': False, 'type': bool},
         {'key': 'linewidth', 'default': 2, 'type': float},
-        {'key': 'plot_title', 'default': 'PTSH Histogram', 'type': str}
+        {'key': 'title', 'default': 'PTSH Histogram', 'type': str}
     ]
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
@@ -29,7 +29,7 @@ def plot_PTSH(spikes_count, window_length, **kwargs):
         plt.fill_between(np.arange(bins), spikes_count, facecolor=kwargs.get('color'), alpha=kwargs.get('alpha'))
         plt.plot(spikes_count, linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
 
-    plt.title(kwargs.get('plot_title'))
+    plt.title(kwargs.get('title'))
     plt.xlabel('Time from stimulus (s)')
     plt.ylabel('Spikes Count')
 
