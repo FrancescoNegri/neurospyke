@@ -31,7 +31,10 @@ def convert_spikes_idxs_to_spike_train(spikes_idxs, sampling_time, duration=None
 
     return spike_train
 
-def get_in_samples(value, sampling_time):
-    value = math.floor(value/sampling_time)
+def get_in_samples(value, sampling_time=None):
+    if sampling_time is not None:
+        value = math.floor(value/sampling_time)
+    else:
+        value = math.floor(value)
 
     return value

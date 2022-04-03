@@ -2,10 +2,19 @@ import numpy as np
 from scipy.signal import find_peaks
 from ... import utils
 
-def hard_threshold_local_maxima_samples(data:np.ndarray, threshold:float, refractory_period:int, use_abs:bool=False):
+def _parse_kwargs(**kwargs):
+    kwargs_list = [
+        {'key': 'sampling_time', 'default': None, 'type': float},
+        {'key': 'use_abs', 'default': False, 'type': bool}
+    ]
+    kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
+
+    return kwargs
+
+def hard_threshold_local_maxima(data:np.ndarray, threshold:float, refractory_period:float, **kwargs):
     '''
     Use the Hard Threshold Local Maxima algorithm to detect spikes,
-    with parameters specified as samples.
+    with parameters specified either in the time domain or in samples.
 
     Parameters
     ----------
@@ -13,9 +22,13 @@ def hard_threshold_local_maxima_samples(data:np.ndarray, threshold:float, refrac
         The array of recorded data.
     threshold : float
         A threshold employed by the algorithm to detect a spike.
-    refractory_period : int
-        The detection algorithm refractory period, expressed in samples.
-    use_abs : bool
+    refractory_period : float
+        The detection algorithm refractory period, expressed in seconds or samples.
+    sampling_time : float, optional
+        The sampling time for the recorded data. If specified, the algorithm
+        will work in the time domain (the other parameters should then be
+        specified in seconds). Otherwise, it will work with samples.
+    use_abs : bool, defualt=False
         A flag indicating if the absolute value of the data is to be used.
     
     Returns
@@ -24,15 +37,20 @@ def hard_threshold_local_maxima_samples(data:np.ndarray, threshold:float, refrac
         An array containing all the indices of detected spikes.
     spikes_values numpy.ndarray
         An array containing all the values (i.e. amplitude) of detected spikes.
-    
+
     References
     ----------
     [1] S. Gibson et al. “Technology-Aware Algorithm Design for Neural Spike Detection, Feature Extraction, and Dimensionality Reduction.” IEEE Transactions on Neural Systems and Rehabilitation Engineering, vol. 18, no. 5, 2010, pp. 469-478., https://doi.org/10.1109/tnsre.2010.2051683
     '''
+    kwargs = _parse_kwargs(**kwargs)
+    
+    # Convert all parameters from time-domain to samples (if sampling_time not None) and force to int
+    refractory_period = utils.get_in_samples(refractory_period, kwargs.get('sampling_time'))
+
     # Cast data type to float
     data = data.astype(np.float64)
 
-    if use_abs is True:
+    if kwargs.get('use_abs') is True:
         data = abs(data)
     
     spikes_idxs, _ = find_peaks(data, height=threshold, distance=refractory_period)
@@ -40,40 +58,5 @@ def hard_threshold_local_maxima_samples(data:np.ndarray, threshold:float, refrac
 
     spikes_idxs = np.array(spikes_idxs, dtype=np.int64)
     spikes_values = np.array(spikes_values, dtype=np.float64)
-    return spikes_idxs, spikes_values
-
-def hard_threshold_local_maxima(data:np.ndarray, sampling_time:float, threshold:float, refractory_period:float, use_abs:bool=False):
-    '''
-    Use the Hard Threshold Local Maxima algorithm to detect spikes,
-    with parameters specified in the time domain.
-
-    Parameters
-    ----------
-    data : numpy.ndarray
-        The array of recorded data.
-    sampling_time : float
-        The sampling time for the recorded data.
-    threshold : float
-        A threshold employed by the algorithm to detect a spike.
-    refractory_period : float
-        The detection algorithm refractory period, expressed in seconds.
-    use_abs : bool
-        A flag indicating if the absolute value of the data is to be used.
     
-    Returns
-    -------
-    spikes_idxs : numpy.ndarray
-        An array containing all the indices of detected spikes.
-    spikes_values numpy.ndarray
-        An array containing all the values (i.e. amplitude) of detected spikes.
-
-    References
-    ----------
-    [1] S. Gibson et al. “Technology-Aware Algorithm Design for Neural Spike Detection, Feature Extraction, and Dimensionality Reduction.” IEEE Transactions on Neural Systems and Rehabilitation Engineering, vol. 18, no. 5, 2010, pp. 469-478., https://doi.org/10.1109/tnsre.2010.2051683
-    '''
-    # Convert all parameters from time-domain to samples
-    refractory_period = utils.get_in_samples(refractory_period, sampling_time)
-    
-    spikes_idxs, spikes_values = hard_threshold_local_maxima_samples(data, threshold, refractory_period, use_abs)
-
     return spikes_idxs, spikes_values
