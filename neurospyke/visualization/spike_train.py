@@ -1,17 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-def _check_kwargs_list(kwargs_list, **kwargs):
-    for kwarg in kwargs_list:
-        kwargs[kwarg['key']] = kwargs.get(kwarg['key'], kwarg['default'])
-
-        if kwarg['type'] is not None:
-            try:
-                kwargs[kwarg['key']] = kwarg['type'](kwargs.get(kwarg['key']))
-            except:
-                raise TypeError("'" + kwarg['key'] + "' expected to be '" + kwarg['type'].__name__ + "', received '" + str(type(kwargs.get(kwarg['key'])).__name__) + "'")
-
-    return kwargs
+from .. import utils
 
 def _parse_kwargs(spikes_times, n_channels, **kwargs):
     # Basic checks
@@ -25,7 +14,7 @@ def _parse_kwargs(spikes_times, n_channels, **kwargs):
         {'key': 'vertical_spacing', 'default': 0.25, 'type': float},
         {'key': 'xlim', 'default': (0, np.amax([spikes_times[channel_idx][-1] for channel_idx in np.arange(n_channels)]) * 1.01), 'type': tuple}
     ]
-    kwargs = _check_kwargs_list(kwargs_list, **kwargs)
+    kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
     # Additional checks
     if kwargs.get('vertical_spacing') < 0 or kwargs.get('vertical_spacing') > 1:
@@ -35,7 +24,7 @@ def _parse_kwargs(spikes_times, n_channels, **kwargs):
     kwargs_list = [
         {'key': 'figsize', 'default': (16, kwargs.get('channel_height') * n_channels), 'type': None}
     ]
-    kwargs = _check_kwargs_list(kwargs_list, **kwargs)
+    kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
     
     return kwargs
 

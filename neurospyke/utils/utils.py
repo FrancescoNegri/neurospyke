@@ -1,6 +1,18 @@
 import math
 import numpy as np
 
+def check_kwargs_list(kwargs_list, **kwargs):
+    for kwarg in kwargs_list:
+        kwargs[kwarg['key']] = kwargs.get(kwarg['key'], kwarg['default'])
+
+        if kwarg['type'] is not None:
+            try:
+                kwargs[kwarg['key']] = kwarg['type'](kwargs.get(kwarg['key']))
+            except:
+                raise TypeError("'" + kwarg['key'] + "' expected to be '" + kwarg['type'].__name__ + "', received '" + str(type(kwargs.get(kwarg['key'])).__name__) + "'")
+
+    return kwargs
+
 def convert_spike_train_to_spikes_idxs(spike_train):
     spikes_idxs = np.argwhere(spike_train != 0)
     spikes_idxs = np.array([spikes_idxs[i][0] for i in range(len(spikes_idxs))])
