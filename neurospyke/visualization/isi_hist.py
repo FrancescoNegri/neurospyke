@@ -1,15 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from .. import utils
 
-def plot_ISI_hist(ISI, bins, plot_title='ISI Histogram', range=None):
-    plt.figure(figsize=(10, 5))
-    
-    if range is not None:
-        range = (range[0], range[1])
+def _parse_kwargs(**kwargs):
+    kwargs_list = [
+        {'key': 'color', 'default': '#1f77b4', 'type': str},
+        {'key': 'dpi', 'default': 100, 'type': float},
+        {'key': 'figsize', 'default': (6, 3), 'type': tuple},
+        {'key': 'title', 'default': 'ISI Histogram', 'type': str},
+        {'key': 'range', 'default': None, 'type': tuple}
+    ]
+    kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
-    plt.hist(ISI, bins=bins, range=range)
+    return kwargs
+
+def plot_ISI_hist(ISI, bins, **kwargs):
+    kwargs = _parse_kwargs(**kwargs)
+    plt.figure(figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
+
+    plt.hist(ISI, bins=bins, range=kwargs.get('range'), color=kwargs.get('color'))
     
-    plt.title(plot_title)
+    plt.title(kwargs.get('title'))
     plt.xlabel('ISI (s)')
     plt.ylabel('Spikes Count')
 
