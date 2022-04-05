@@ -4,5 +4,9 @@ from .butterfly import plot_butterfly
 from .spike_train import plot_spike_train
 from .isih import plot_ISIH
 from .ptsh import plot_PTSH
+from .crosscorr import plot_cross_correlogram
 
-__all__ = ['plot_raw_data', 'plot_spikes', 'plot_butterfly', 'plot_spike_train', 'plot_ISIH', 'plot_PTSH']
+__all__ = [
+    'plot_raw_data', 'plot_spikes', 'plot_butterfly',
+    'plot_spike_train', 'plot_ISIH',
+    'plot_PTSH', 'plot_cross_correlogram']
