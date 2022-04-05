@@ -18,4 +18,7 @@ def plot_butterfly(data, sampling_time, spikes_idxs, window_half_length, plot_ti
     ax = plt.gca()
     ax.set_xlim(window_times[0], window_times[-1])
 
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
     return

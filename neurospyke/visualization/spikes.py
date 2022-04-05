@@ -16,4 +16,7 @@ def plot_spikes(data, sampling_time, spikes_idxs, plot_title='Spike Plot'):
     ax = plt.gca()
     ax.set_xlim(0, times[-1])
 
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
     return
