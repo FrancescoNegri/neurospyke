@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 from .. import utils
 
 def _parse_kwargs(**kwargs):
@@ -41,6 +42,9 @@ def plot_spikes(data, spikes_idxs, **kwargs):
     ax = plt.gca()
     ax.set_xlim(0, times[-1]) if kwargs.get('xlim') is None else ax.set_xlim(kwargs.get('xlim'))
     ax.set_ylim(None, None) if kwargs.get('ylim') is None else ax.set_ylim(kwargs.get('ylim'))
+
+    if kwargs.get('sampling_time') is None:
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     if kwargs.get('boxoff') is True:
         ax.spines['top'].set_visible(False)
