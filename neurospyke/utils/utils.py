@@ -10,6 +10,9 @@ def check_kwargs_list(kwargs_list, **kwargs):
                 pass
             else:
                 try:
+                    if ((kwarg['type'] == list) or (kwarg['type'] == tuple)) and (type(kwargs.get(kwarg['key'])) is str):
+                        kwargs[kwarg['key']] = [kwargs.get(kwarg['key'])]
+
                     kwargs[kwarg['key']] = kwarg['type'](kwargs.get(kwarg['key']))
                 except:
                     raise TypeError("'" + kwarg['key'] + "' expected to be '" + kwarg['type'].__name__ + "', received '" + str(type(kwargs.get(kwarg['key'])).__name__) + "'")
