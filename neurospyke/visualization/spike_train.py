@@ -10,7 +10,7 @@ def _parse_kwargs(spikes_times, n_channels, **kwargs):
         {'key': 'boxoff', 'default': True, 'type': bool},
         {'key': 'channel_height', 'default': 0.5, 'type': float},
         {'key': 'channel_labels', 'default': [str(i) for i in np.arange(1, n_channels + 1, 1)], 'type': tuple},
-        {'key': 'color', 'default': 'black', 'type': str},
+        {'key': 'color', 'default': ['black' for _ in np.arange(1, n_channels + 1, 1)], 'type': list},
         {'key': 'dpi', 'default': 300, 'type': float},
         {'key': 'figsize', 'default': (16, kwargs.get('channel_height', 0.5) * n_channels), 'type': tuple},
         {'key': 'linewidth', 'default': 0.5, 'type': float},
@@ -26,10 +26,15 @@ def _parse_kwargs(spikes_times, n_channels, **kwargs):
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
     # Additional checks
-    if kwargs.get('vertical_spacing') < 0 or kwargs.get('vertical_spacing') > 1:
-        raise ValueError("'vertical_spacing' expected to be a value between 0 and 1, received " + str(kwargs.get('vertical_spacing')))
     if len(kwargs.get('channel_labels')) != n_channels:
         raise ValueError("'channel_labels' expected to contain " + str(n_channels) + " elements, received " + str(len(kwargs.get('channel_labels'))))
+    if len(kwargs.get('color')) != n_channels:
+        if len(kwargs.get('color')) == 1:
+            kwargs['color'] = [kwargs.get('color')[0] for _ in np.arange(1, n_channels + 1, 1)]
+        else:
+            raise ValueError("'color' expected to contain " + str(n_channels) + " elements, received " + str(len(kwargs.get('color'))))
+    if kwargs.get('vertical_spacing') < 0 or kwargs.get('vertical_spacing') > 1:
+        raise ValueError("'vertical_spacing' expected to be a value between 0 and 1, received " + str(kwargs.get('vertical_spacing')))
     
     return kwargs
 
@@ -50,12 +55,13 @@ def plot_spike_train(spikes_idxs, **kwargs):
     if (kwargs.get('reverse') is True) and (n_channels > 1):
         spikes_times = np.flip(spikes_times, axis=0)
         kwargs['channel_labels'] = np.flip(kwargs.get('channel_labels'))
+        kwargs['color'] = np.flip(kwargs.get('color'))
     
     for channel_idx in np.arange(n_channels):
         for spike_idx in np.arange(len(spikes_times[channel_idx])):
             y = [channel_idx * kwargs.get('channel_height'), channel_idx * kwargs.get('channel_height') + kwargs.get('channel_height') * (1 - kwargs.get('vertical_spacing'))]
             x = [spikes_times[channel_idx][spike_idx], spikes_times[channel_idx][spike_idx]]
-            plt.plot(x, y, color=kwargs.get('color'), linewidth=kwargs.get('linewidth'))
+            plt.plot(x, y, color=kwargs.get('color')[channel_idx], linewidth=kwargs.get('linewidth'))
 
     plt.title(kwargs.get('title'))
     plt.xlabel(kwargs.get('xlabel'))
