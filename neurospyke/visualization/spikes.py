@@ -19,7 +19,7 @@ def _parse_kwargs(**kwargs):
         {'key': 'xlabel', 'default': 'Time (s)' if kwargs.get('sampling_time', None) is not None else 'Samples', 'type': str},
         {'key': 'xlim', 'default': None, 'type': tuple},
         {'key': 'ylabel', 'default': 'Voltage (µV)', 'type': str},
-        {'key': 'ylim', 'default': None, 'type': tuple},
+        {'key': 'ylim', 'default': None, 'type': tuple}
     ]
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
