@@ -6,11 +6,11 @@ from .. import utils
 def _parse_kwargs(**kwargs):
     kwargs_list = [
         {'key': 'alpha', 'default': 0.25, 'type': float},
+        {'key': 'barplot', 'default': False, 'type': bool},
         {'key': 'boxoff', 'default': True, 'type': bool},
         {'key': 'color', 'default': '#1f77b4', 'type': str},
         {'key': 'dpi', 'default': 100, 'type': float},
         {'key': 'figsize', 'default': (6, 3), 'type': tuple},
-        {'key': 'barplot', 'default': False, 'type': bool},
         {'key': 'linewidth', 'default': 2, 'type': float},
         {'key': 'normalize', 'default': False, 'type': bool},
         {'key': 'num', 'default': None, 'type': str},
