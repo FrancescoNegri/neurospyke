@@ -2,7 +2,7 @@ import math
 import numpy as np
 from ... import utils
 
-def PTSH_train(spike_train, stimuli_idxs, sampling_time, window_length, bins):
+def PSTH_train(spike_train, stimuli_idxs, sampling_time, window_length, bins):
     window_length = utils.get_in_samples(window_length, sampling_time)
     
     spikes_count = []
@@ -23,9 +23,9 @@ def PTSH_train(spike_train, stimuli_idxs, sampling_time, window_length, bins):
 
     return avg_spikes_count, spikes_count
 
-def PTSH(spikes_idxs, stimuli_idxs, sampling_time, window_length, bins):
+def PSTH(spikes_idxs, stimuli_idxs, sampling_time, window_length, bins):
     spike_train = utils.convert_spikes_idxs_to_spike_train(spikes_idxs, sampling_time)
 
-    avg_spikes_count, spikes_count = PTSH_train(spike_train, stimuli_idxs, sampling_time, window_length, bins)
+    avg_spikes_count, spikes_count = PSTH_train(spike_train, stimuli_idxs, sampling_time, window_length, bins)
 
     return avg_spikes_count, spikes_count

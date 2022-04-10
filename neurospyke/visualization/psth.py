@@ -15,7 +15,7 @@ def _parse_kwargs(**kwargs):
         {'key': 'normalize', 'default': False, 'type': bool},
         {'key': 'num', 'default': None, 'type': str},
         {'key': 'sampling_time', 'default': None, 'type': float},
-        {'key': 'title', 'default': 'PTSH Histogram', 'type': str},
+        {'key': 'title', 'default': 'PSTH Histogram', 'type': str},
         {'key': 'xlabel', 'default': 'Time from stimulus (s)' if kwargs.get('sampling_time', None) is not None else 'Samples from stimulus', 'type': str},
         {'key': 'xlim', 'default': (0, None), 'type': tuple},
         {'key': 'ylabel', 'default': 'Spikes Count', 'type': str},
@@ -25,7 +25,7 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def plot_PTSH(spikes_count, window_length, **kwargs):
+def plot_PSTH(spikes_count, window_length, **kwargs):
     kwargs = _parse_kwargs(**kwargs)
 
     plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
