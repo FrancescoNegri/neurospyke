@@ -35,7 +35,7 @@ def plot_PSTH(spikes_count, window_length, **kwargs):
         spikes_count = spikes_count/np.sum(spikes_count)
     
     if kwargs.get('barplot') is True:
-        plt.bar(np.arange(bins), spikes_count, align='edge', color=kwargs.get('color'))
+        plt.bar(np.arange(bins), spikes_count, width=1, align='edge', color=kwargs.get('color'))
     else:
         plt.fill_between(np.arange(bins), spikes_count, facecolor=kwargs.get('color'), alpha=kwargs.get('alpha'))
         plt.plot(spikes_count, linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
