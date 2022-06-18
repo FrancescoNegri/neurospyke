@@ -5,6 +5,7 @@ from .. import utils
 
 def _parse_kwargs(**kwargs):
     kwargs_list = [
+        {'key': 'ax', 'default': None, 'type': None},
         {'key': 'boxoff', 'default': True, 'type': bool},
         {'key': 'color', 'default': '#1f77b4', 'type': str},
         {'key': 'dpi', 'default': 100, 'type': float},
@@ -25,16 +26,20 @@ def _parse_kwargs(**kwargs):
 def plot_raw_data(data, **kwargs):
     kwargs = _parse_kwargs(**kwargs)
 
-    plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
+    if kwargs.get('ax') is None:
+        plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
+        ax = plt.gca()
+    else:
+        ax = kwargs.get('ax')
+
     times = kwargs.get('sampling_time') * np.arange(0, len(data), 1) if kwargs.get('sampling_time') is not None else np.arange(0, len(data), 1)
     
-    plt.plot(times, data, linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
+    ax.plot(times, data, linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
 
-    plt.title(kwargs.get('title'))
-    plt.xlabel(kwargs.get('xlabel'))
-    plt.ylabel(kwargs.get('ylabel'))
-
-    ax = plt.gca()
+    ax.set_title(kwargs.get('title'))
+    ax.set_xlabel(kwargs.get('xlabel'))
+    ax.set_ylabel(kwargs.get('ylabel'))
+    
     ax.set_xlim(0, times[-1]) if kwargs.get('xlim') is None else ax.set_xlim(kwargs.get('xlim'))
     ax.set_ylim(None, None) if kwargs.get('ylim') is None else ax.set_ylim(kwargs.get('ylim'))
 
