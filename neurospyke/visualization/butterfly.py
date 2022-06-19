@@ -23,6 +23,27 @@ def _parse_kwargs(**kwargs):
     return kwargs
 
 def plot_butterfly(data, spikes_idxs, **kwargs):
+    '''
+    Plot the so-called Butterfly Plot, displaying all the detected
+    spikes on the same axes.
+    The spikes are centered in zero and a user-specified window is
+    taken to visualize the spike shape before and after the event,
+    with parameters specified either in the time domain or in samples.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        The array of recorded data.
+    spikes_idxs : numpy.ndarray
+        An array containing all the indices of detected spikes.
+    window_length : float
+        The length for the detection window to employ while plotting
+        spikes, expressed in seconds or samples.
+    sampling_time : float, optional
+        The sampling time for the recorded data. If specified, the algorithm
+        will work in the time domain (the other parameters should then be
+        specified in seconds). Otherwise, it will work with samples.
+    '''
     kwargs = _parse_kwargs(**kwargs)
 
     plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))

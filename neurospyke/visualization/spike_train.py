@@ -7,6 +7,7 @@ from .. import utils
 def _parse_kwargs(spikes_times, n_channels, **kwargs):
     # Basic checks
     kwargs_list = [
+        {'key': 'ax', 'default': None, 'type': None},
         {'key': 'boxoff', 'default': True, 'type': bool},
         {'key': 'channel_height', 'default': 0.5, 'type': float},
         {'key': 'channel_labels', 'default': [str(i) for i in np.arange(1, n_channels + 1, 1)], 'type': tuple},
@@ -26,7 +27,7 @@ def _parse_kwargs(spikes_times, n_channels, **kwargs):
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
     # Additional checks
-    if len(kwargs.get('channel_labels')) != n_channels:
+    if (kwargs.get('channel_labels') is not None) and (len(kwargs.get('channel_labels')) != n_channels):
         raise ValueError("'channel_labels' expected to contain " + str(n_channels) + " elements, received " + str(len(kwargs.get('channel_labels'))))
     if len(kwargs.get('color')) != n_channels:
         if len(kwargs.get('color')) == 1:
@@ -50,7 +51,11 @@ def plot_spike_train(spikes_idxs, **kwargs):
 
     kwargs = _parse_kwargs(spikes_times, n_channels, **kwargs)
 
-    plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
+    if kwargs.get('ax') is None:
+        plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
+        ax = plt.gca()
+    else:
+        ax = kwargs.get('ax')
 
     if (kwargs.get('reverse') is True) and (n_channels > 1):
         spikes_times = np.flip(spikes_times, axis=0)
@@ -61,19 +66,21 @@ def plot_spike_train(spikes_idxs, **kwargs):
         for spike_idx in np.arange(len(spikes_times[channel_idx])):
             y = [channel_idx * kwargs.get('channel_height'), channel_idx * kwargs.get('channel_height') + kwargs.get('channel_height') * (1 - kwargs.get('vertical_spacing'))]
             x = [spikes_times[channel_idx][spike_idx], spikes_times[channel_idx][spike_idx]]
-            plt.plot(x, y, color=kwargs.get('color')[channel_idx], linewidth=kwargs.get('linewidth'))
+            ax.plot(x, y, color=kwargs.get('color')[channel_idx], linewidth=kwargs.get('linewidth'))
 
-    plt.title(kwargs.get('title'))
-    plt.xlabel(kwargs.get('xlabel'))
-    plt.ylabel(kwargs.get('ylabel'))
+    ax.set_title(kwargs.get('title'))
+    ax.set_xlabel(kwargs.get('xlabel'))
+    ax.set_ylabel(kwargs.get('ylabel'))
 
-    ax = plt.gca()
     ax.set_xlim(kwargs.get('xlim'))
     ax.set_ylim(0, kwargs.get('channel_height') * n_channels)
     
     yticks = np.arange(kwargs.get('channel_height') / 2, round(n_channels * kwargs.get('channel_height') + kwargs.get('channel_height') / 2, 8), kwargs.get('channel_height'))
     ax.set_yticks(yticks)
-    ax.set_yticklabels(kwargs.get('channel_labels'))
+    if kwargs.get('channel_labels') is not None:
+        ax.set_yticklabels(kwargs.get('channel_labels'))
+    else:
+        ax.set_yticklabels([])
     ax.tick_params(axis='y', which='both', length=0)
 
     if kwargs.get('sampling_time') is None:
