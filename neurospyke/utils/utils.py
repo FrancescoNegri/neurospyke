@@ -8,6 +8,8 @@ def check_kwargs_list(kwargs_list, **kwargs):
         if kwarg['type'] is not None:
             if (kwargs.get(kwarg['key']) is None) and (kwarg['default'] is None):
                 pass
+            elif kwargs.get(kwarg['key']) is None:
+                pass
             else:
                 try:
                     if ((kwarg['type'] == list) or (kwarg['type'] == tuple)) and (type(kwargs.get(kwarg['key'])) is str):
