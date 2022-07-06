@@ -10,7 +10,7 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def differential_threshold(data:np.ndarray, threshold:float, window_length:float, **kwargs):
+def differential_threshold(data:np.ndarray, threshold:float, window_length:float, refractory_period:float, **kwargs):
     '''
     Use the Spike Detection Differential Threshold (SDDT) algorithm
     to detect spikes, with parameters specified either in the time
@@ -25,6 +25,8 @@ def differential_threshold(data:np.ndarray, threshold:float, window_length:float
     window_length : float
         The length for the detection window to employ while looking
         for spikes to detect, expressed in seconds or samples.
+    refractory_period : float
+        The detection algorithm refractory period, expressed in seconds or samples.
     sampling_time : float, optional
         The sampling time for the recorded data. If specified, the algorithm
         will work in the time domain (the other parameters should then be
@@ -45,7 +47,8 @@ def differential_threshold(data:np.ndarray, threshold:float, window_length:float
     
     # Convert all parameters from time-domain to samples (if sampling_time not None) and force to int
     window_length = utils.get_in_samples(window_length, kwargs.get('sampling_time'))
-    
+    refractory_period = utils.get_in_samples(refractory_period, kwargs.get('sampling_time'))
+
     # Cast data type to float
     data = data.astype(np.float64)
 
@@ -61,8 +64,12 @@ def differential_threshold(data:np.ndarray, threshold:float, window_length:float
         min_value = np.amin(window_data)
 
         if abs(max_value - min_value) >= threshold:
-            spikes_idxs.append(np.argmax(window_data) + window_idx)
-            spikes_values.append(max_value)
+            if (len(spikes_idxs) != 0 and (np.argmax(window_data) + window_idx - spikes_idxs[-1]) > refractory_period):
+                spikes_idxs.append(np.argmax(window_data) + window_idx)
+                spikes_values.append(max_value)
+            elif len(spikes_idxs) == 0:
+                spikes_idxs.append(np.argmax(window_data) + window_idx)
+                spikes_values.append(max_value)
 
     spikes_idxs = np.array(spikes_idxs, dtype=np.int64)
     spikes_values = np.array(spikes_values, dtype=np.float64)
