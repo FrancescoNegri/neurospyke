@@ -5,8 +5,9 @@ from .spike_train import plot_spike_train
 from .isih import plot_ISIH
 from .psth import plot_PSTH
 from .crosscorr import plot_cross_correlogram
+import matplotlib.pyplot as pyplot
 
 __all__ = [
     'plot_raw_data', 'plot_spikes', 'plot_butterfly',
     'plot_spike_train', 'plot_ISIH',
-    'plot_PSTH', 'plot_cross_correlogram']
+    'plot_PSTH', 'plot_cross_correlogram', 'pyplot']
