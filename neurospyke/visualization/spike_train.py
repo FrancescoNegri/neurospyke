@@ -60,10 +60,6 @@ def plot_spike_train(spikes_idxs, **kwargs):
 
     n_channels = spikes_idxs.shape[0]
     spikes_times = kwargs.get('sampling_time') * spikes_idxs if kwargs.get('sampling_time') is not None else spikes_idxs
-   
-    for spikes_time in spikes_times:
-        if np.size(spikes_time) == 0:
-            print(spikes_time)
 
     kwargs = _parse_kwargs(spikes_times, n_channels, **kwargs)
 
