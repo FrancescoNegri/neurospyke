@@ -4,6 +4,18 @@ from matplotlib.ticker import MaxNLocator
 
 from .. import utils
 
+def _compute_default_xlim(spikes_times, n_channels, margin = 1.01):
+    xlim = [0, 0]
+    
+    for channel_idx in np.arange(n_channels):
+        if np.size(spikes_times[channel_idx]) > 0:
+            channel_max = np.amax(spikes_times[channel_idx]) * margin
+            if channel_max > xlim[1]:
+                xlim[1] = channel_max
+    
+    xlim = tuple(xlim)
+    return xlim
+
 def _parse_kwargs(spikes_times, n_channels, **kwargs):
     # Basic checks
     kwargs_list = [
@@ -21,7 +33,7 @@ def _parse_kwargs(spikes_times, n_channels, **kwargs):
         {'key': 'reverse', 'default': False, 'type': bool},
         {'key': 'vertical_spacing', 'default': 0.25, 'type': float},
         {'key': 'xlabel', 'default': 'Time (s)' if kwargs.get('sampling_time', None) is not None else 'Samples', 'type': str},
-        {'key': 'xlim', 'default': (0, np.amax([spikes_times[channel_idx][-1] for channel_idx in np.arange(n_channels)]) * 1.01), 'type': tuple},
+        {'key': 'xlim', 'default': _compute_default_xlim(spikes_times, n_channels), 'type': tuple},
         {'key': 'ylabel', 'default': 'Channels', 'type': str}
     ]
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
@@ -48,6 +60,10 @@ def plot_spike_train(spikes_idxs, **kwargs):
 
     n_channels = spikes_idxs.shape[0]
     spikes_times = kwargs.get('sampling_time') * spikes_idxs if kwargs.get('sampling_time') is not None else spikes_idxs
+   
+    for spikes_time in spikes_times:
+        if np.size(spikes_time) == 0:
+            print(spikes_time)
 
     kwargs = _parse_kwargs(spikes_times, n_channels, **kwargs)
 
