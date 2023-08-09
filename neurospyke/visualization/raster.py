@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from .. import utils
 from .spike_train import plot_spike_train
 
-def plot_raster(spikes_obj, sampling_time, n_cols = 1, is_train = True, figsize=[12, 8]):
+def plot_raster(spikes_obj, sampling_time, n_cols = 1, is_train = True, figsize=[12, 8], title='Stimulus-Related Raster Plots', xlim=None):
     if np.size(np.shape(spikes_obj)) == 2:
         spikes_obj = np.array([spikes_obj])
     
@@ -24,6 +24,6 @@ def plot_raster(spikes_obj, sampling_time, n_cols = 1, is_train = True, figsize=
         row = int(np.floor(channel_idx / n_cols))
         col = channel_idx % n_cols
 
-        plot_spike_train(spikes_idxs, ax=axs[row, col], sampling_time=sampling_time, ylabel='Trials', channel_labels=None, reverse=True, title='Channel #' + str(channel_idx), vertical_spacing=0.1, linewidth=0.4)
+        plot_spike_train(spikes_idxs, ax=axs[row, col], sampling_time=sampling_time, ylabel='Trials', channel_labels=None, reverse=True, title='Channel #' + str(channel_idx), vertical_spacing=0.1, linewidth=0.4, xlim=xlim)
     
-    fig.suptitle('Stimulus-Related Raster Plots')
+    fig.suptitle(title, fontsize=16)
