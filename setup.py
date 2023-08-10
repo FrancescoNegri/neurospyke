@@ -17,7 +17,8 @@ LONG_DESC_TYPE = "text/markdown"
 INSTALL_REQUIRES = [
       'matplotlib',
       'numpy',
-      'scipy'
+      'scipy',
+      'pywavelets'
 ]
 
 setup(name=PACKAGE_NAME,
