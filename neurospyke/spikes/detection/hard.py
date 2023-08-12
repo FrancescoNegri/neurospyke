@@ -4,8 +4,8 @@ from ... import utils
 
 def _parse_kwargs(**kwargs):
     kwargs_list = [
-        {'key': 'sampling_time', 'default': None, 'type': float},
-        {'key': 'polarity', 'default': -1, 'type': int}
+        {'key': 'polarity', 'default': -1, 'type': int},
+        {'key': 'sampling_time', 'default': None, 'type': float}
     ]
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
@@ -24,14 +24,14 @@ def hard_threshold(data:np.ndarray, threshold:float, refractory_period:float, **
         A threshold employed by the algorithm to detect a spike.
     refractory_period : float
         The detection algorithm refractory period, expressed in seconds or samples.
-    sampling_time : float, optional
-        The sampling time for the recorded data. If specified, the algorithm
-        will work in the time domain (the other parameters should then be
-        specified in seconds). Otherwise, it will work with samples.
     polarity : {-1, 0, 1}, defualt=-1
         The polarity of spikes to look for. -1 means negative polarity,
         1 mean positive ones, while 0 applies the absolute value to the
         signal.
+    sampling_time : float, optional
+        The sampling time for the recorded data. If specified, the algorithm
+        will work in the time domain (the other parameters should then be
+        specified in seconds). Otherwise, it will work with samples.
     
     Returns
     -------
