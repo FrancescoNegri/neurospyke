@@ -21,22 +21,25 @@ def check_kwargs_list(kwargs_list, **kwargs):
 
     return kwargs
 
-def convert_spike_train_to_spikes_idxs(spike_train):
-    spikes_idxs = np.argwhere(spike_train != 0)
-    spikes_idxs = np.array([spikes_idxs[i][0] for i in range(len(spikes_idxs))])
+def convert_train_to_idxs(train:np.ndarray):
+    train.squeeze()
+    idxs = np.argwhere(train).astype(np.int64)
 
-    return spikes_idxs
+    return idxs
 
-def convert_spikes_idxs_to_spike_train(spikes_idxs, sampling_time, duration=None):
+def convert_idxs_to_train(idxs:np.ndarray, duration:float = None, sampling_time:float = None):
     if duration is None:
-        duration = spikes_idxs[-1] * sampling_time * 1.02
+        train = np.zeros(idxs[-1], dtype=bool)
+    elif sampling_time is None:
+        train = np.zeros(duration, dtype=bool)
+    else:
+        train = np.zeros(math.floor(duration/sampling_time), dtype=bool)
+    
+    train[idxs] = True
 
-    spike_train = np.zeros(math.floor(duration/sampling_time))
-    spike_train[spikes_idxs] = 1
+    return train
 
-    return spike_train
-
-def get_in_samples(value, sampling_time=None):
+def get_in_samples(value, sampling_time:float = None):
     if sampling_time is not None:
         value = math.floor(value/sampling_time)
     else:
