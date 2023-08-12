@@ -1,4 +1,5 @@
 import numpy as np
+
 from ... import utils
 
 def _parse_kwargs(**kwargs):
@@ -10,11 +11,16 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def get_waveforms(data, spikes_idxs, **kwargs):
+def get_waveforms(data:np.ndarray, spikes:np.ndarray, **kwargs):
     kwargs = _parse_kwargs(**kwargs)
 
     data.squeeze()
-    spikes_idxs.squeeze()
+    spikes.squeeze()
+
+    if spikes.dtype == 'bool':
+        spikes_idxs = utils.convert_train_to_idxs(spikes)
+    else:
+        spikes_idxs = spikes
 
     window_half_length = utils.get_in_samples(kwargs.get('window_length') / 2, kwargs.get('sampling_time'))
     
