@@ -1,5 +1,6 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 from matplotlib.ticker import MaxNLocator
 from .. import utils
 from ..spikes.sorting import get_waveforms 
@@ -23,7 +24,7 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def plot_butterfly(data, spikes_idxs, **kwargs):
+def plot_butterfly(data:np.ndarray, spikes:np.ndarray, **kwargs):
     '''
     Plot the so-called Butterfly Plot, displaying all the detected
     spikes on the same axes.
@@ -35,8 +36,9 @@ def plot_butterfly(data, spikes_idxs, **kwargs):
     ----------
     data : numpy.ndarray
         The array of recorded data.
-    spikes_idxs : numpy.ndarray
-        An array containing all the indices of detected spikes.
+    spikes : numpy.ndarray
+        An array containing the detected spikes. It can be express both
+        as a spike train or as a list of the indices at which spikes occur.
     window_length : float
         The length for the detection window to employ while plotting
         spikes, expressed in seconds or samples.
@@ -46,6 +48,15 @@ def plot_butterfly(data, spikes_idxs, **kwargs):
         specified in seconds). Otherwise, it will work with samples.
     '''
     kwargs = _parse_kwargs(**kwargs)
+
+    # Cast data type to float
+    data = data.astype(np.float64).squeeze()
+    spikes = spikes.squeeze()
+
+    if spikes.dtype == 'bool':
+        spikes_idxs = utils.convert_train_to_idxs(spikes)
+    else:
+        spikes_idxs = spikes
 
     plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
     window_half_length = utils.get_in_samples(kwargs.get('window_length') / 2, kwargs.get('sampling_time'))
