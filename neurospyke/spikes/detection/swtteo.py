@@ -5,15 +5,15 @@ from ... import utils
 
 def _parse_kwargs(**kwargs):
     kwargs_list = [
-        {'key': 'refractory_period', 'default': 0.001, 'type': float},
         {'key': 'peak_duration', 'default': 0.0025, 'type': float},
+        {'key': 'polarity', 'default': -1, 'type': int},
+        {'key': 'refractory_period', 'default': 0.001, 'type': float},
+        {'key': 'threshold', 'default': 6, 'type': float},
         {'key': 'wavelet_level', 'default': 2, 'type': int},
         {'key': 'wavelet_name', 'default': 'sym6', 'type': str},
         {'key': 'window', 'default': 'hamming', 'type': None},
         {'key': 'window_samples', 'default': 25, 'type': int},
-        {'key': 'window_symmetric', 'default': True, 'type': bool},
-        {'key': 'threshold', 'default': 6, 'type': float},
-        {'key': 'polarity', 'default': -1, 'type': int},
+        {'key': 'window_symmetric', 'default': True, 'type': bool}
     ]
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
@@ -21,27 +21,40 @@ def _parse_kwargs(**kwargs):
 
 def SWTTEO(data:np.ndarray, sampling_time:float, **kwargs):
     '''
-    Use the Precision Timing Spike Detection (PTSD) algorithm to detect spikes,
-    with parameters specified either in the time domain or in samples.
+    Use the stationary wavelet transform and Teager Energy Operator (SWTTEO) algorithm to detect spikes,
+    with parameters specified in the time domain.
 
     Parameters
     ----------
     data : numpy.ndarray
         The array of recorded data.
-    threshold : float
-        A threshold employed by the algorithm to detect a spike.
-    refractory_period : float
-        The detection algorithm refractory period, expressed in seconds or samples.
-    peak_lifetime_period : float
+    sampling_time : float
+        The sampling time for the recorded data.
+    peak_duration : float, default=0.0025
         The maximum duration of a spike, between its positive and
-        negative peaks. Expressed in seconds or samples.
-    overshoot : float
-        An extra time interval extending the peak lifetime period in case
-        no spike is found inside it, expressed in seconds or samples.
-    sampling_time : float, optional
-        The sampling time for the recorded data. If specified, the algorithm
-        will work in the time domain (the other parameters should then be
-        specified in seconds). Otherwise, it will work with samples.
+        negative peaks. Expressed in seconds.
+    polarity : {-1, 1}, defualt=-1
+        The polarity of spikes to look for. -1 means negative polarity,
+        1 mean positive ones.
+    refractory_period : float, default=0.001
+        The detection algorithm refractory period, expressed in seconds.
+    threshold : float, default=6
+        A multiplication coefficient for the threshold employed by the algorithm to
+        detect a spike.
+    wavelet_level : int, default=2
+        The wavelet decomposition level, specified as an integer.
+    wavelet_name : str, default='sym6'
+        The wavelet name. Refer to the PyWavelet documentation for an extensive list
+        of the available built-in wavelets.
+    window : str or float or tuple, default='hamming'
+        The type of smoothing window to employ. Refer to the SciPy documentation for a
+        detailed explanation of this parameter.
+    window_samples : int, default=25
+        The number of samples in the smoothing window.
+    window_symmetric : bool, default=True
+        If True, create a “symmetric” window, for use in filter design.
+        If False, create a “periodic” window, ready to use with ifftshift
+        and be multiplied by the result of an FFT. 
     
     Returns
     -------
@@ -52,7 +65,7 @@ def SWTTEO(data:np.ndarray, sampling_time:float, **kwargs):
     
     References
     ----------
-    [1] A. Maccione et al. “A novel algorithm for precise identification of spikes in extracellularly recorded neuronal signals.” Journal of neuroscience methods vol. 177,1 (2009): 241-9. https://doi.org/10.1016/j.jneumeth.2008.09.026
+    [1] Lieb, F., Stark, H. G., & Thielemann, C. (2017). A stationary wavelet transform and a time-frequency based spike detection algorithm for extracellular recorded data. Journal of Neural Engineering, 14(3), 036013. https://doi.org/10.1088/1741-2552/aa654b
     '''
     kwargs = _parse_kwargs(**kwargs)
     
@@ -62,7 +75,6 @@ def SWTTEO(data:np.ndarray, sampling_time:float, **kwargs):
 
     # Cast data type to float
     data = data.astype(np.float64).squeeze()
-
     L = np.size(data)
 
     pow = np.power(2, kwargs.get('wavelet_level'))
