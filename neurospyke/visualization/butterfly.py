@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from .. import utils
+from ..spikes.sorting import get_waveforms 
 
 def _parse_kwargs(**kwargs):
     kwargs_list = [
@@ -48,18 +49,17 @@ def plot_butterfly(data, spikes_idxs, **kwargs):
 
     plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
     window_half_length = utils.get_in_samples(kwargs.get('window_length') / 2, kwargs.get('sampling_time'))
-    window_times = kwargs.get('sampling_time') * 1000 * np.arange(-window_half_length, window_half_length + 1, 1) if kwargs.get('sampling_time') is not None else np.arange(-window_half_length, window_half_length + 1, 1)
+    window_times = kwargs.get('sampling_time') * 1000 * np.arange(-window_half_length, window_half_length, 1) if kwargs.get('sampling_time') is not None else np.arange(-window_half_length, window_half_length, 1)
+    window_times = np.tile(window_times, (np.size(spikes_idxs), 1))
 
-    for i in range(len(spikes_idxs)):
-        window_data = data[range(spikes_idxs[i] - window_half_length, spikes_idxs[i] + window_half_length + 1, 1)]
-        plt.plot(window_times, window_data, linewidth=kwargs.get('linewidth'))
+    plt.plot(window_times.T, np.transpose(get_waveforms(data, spikes_idxs, **kwargs)), linewidth=kwargs.get('linewidth'))
 
     plt.title(kwargs.get('title'))
     plt.xlabel(kwargs.get('xlabel'))
     plt.ylabel(kwargs.get('ylabel'))
 
     ax = plt.gca()
-    ax.set_xlim(window_times[0], window_times[-1]) if kwargs.get('xlim') is None else ax.set_xlim(kwargs.get('xlim'))
+    ax.set_xlim(window_times[0, 0], window_times[0, -1]) if kwargs.get('xlim') is None else ax.set_xlim(kwargs.get('xlim'))
     ax.set_ylim(None, None) if kwargs.get('ylim') is None else ax.set_ylim(kwargs.get('ylim'))
 
     if kwargs.get('sampling_time') is None:
