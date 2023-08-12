@@ -1,7 +1,8 @@
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
+import numpy as np
+
 from .. import utils
+from .raw_data import plot_raw_data
 
 def _parse_kwargs(**kwargs):
     kwargs_list = [
@@ -26,33 +27,27 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def plot_spikes(data, spikes_idxs, **kwargs):
+def plot_spikes(data:np.ndarray, spikes:np.ndarray, **kwargs):
     kwargs = _parse_kwargs(**kwargs)
+
+    # Cast data type to float
+    data = data.astype(np.float64).squeeze()
+    spikes = spikes.squeeze()
+
+    if spikes.dtype == 'bool':
+        spikes_idxs = utils.convert_train_to_idxs(spikes)
+    else:
+        spikes_idxs = spikes
 
     if kwargs.get('ax') is None:
         plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
-        ax = plt.gca()
-    else:
-        ax = kwargs.get('ax')
+        kwargs['ax'] = plt.gca()
     
-    times = kwargs.get('sampling_time') * np.arange(0, len(data), 1) if kwargs.get('sampling_time') is not None else np.arange(0, len(data), 1)
+    ax = kwargs.get('ax')
+
+    plot_raw_data(data, **kwargs)
+
     spikes_times = kwargs.get('sampling_time') * spikes_idxs if kwargs.get('sampling_time') is not None else spikes_idxs
-    
-    ax.plot(times, data, linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
     ax.plot(spikes_times, data[spikes_idxs], color=kwargs.get('markercolor'), marker=kwargs.get('marker'), markersize=kwargs.get('markersize'), linestyle='None')
-
-    ax.set_title(kwargs.get('title'))
-    ax.set_xlabel(kwargs.get('xlabel'))
-    ax.set_ylabel(kwargs.get('ylabel'))
-
-    ax.set_xlim(0, times[-1]) if kwargs.get('xlim') is None else ax.set_xlim(kwargs.get('xlim'))
-    ax.set_ylim(None, None) if kwargs.get('ylim') is None else ax.set_ylim(kwargs.get('ylim'))
-
-    if kwargs.get('sampling_time') is None:
-        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-
-    if kwargs.get('boxoff') is True:
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
 
     return
