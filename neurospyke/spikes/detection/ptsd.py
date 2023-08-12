@@ -4,6 +4,7 @@ from ... import utils
 
 def _parse_kwargs(**kwargs):
     kwargs_list = [
+        {'key': 'polarity', 'default': -1, 'type': int},
         {'key': 'sampling_time', 'default': None, 'type': float}
     ]
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
@@ -17,7 +18,7 @@ def PTSD(data:np.ndarray, threshold:float, refractory_period:float, peak_lifetim
 
     Parameters
     ----------
-    data : numpy.ndarray
+    data : ndarray
         The array of recorded data.
     threshold : float
         A threshold employed by the algorithm to detect a spike.
@@ -29,6 +30,9 @@ def PTSD(data:np.ndarray, threshold:float, refractory_period:float, peak_lifetim
     overshoot : float
         An extra time interval extending the peak lifetime period in case
         no spike is found inside it, expressed in seconds or samples.
+    polarity : {-1, 1}, defualt=-1
+        The polarity of spikes to look for. -1 means negative polarity,
+        1 mean positive ones.
     sampling_time : float, optional
         The sampling time for the recorded data. If specified, the algorithm
         will work in the time domain (the other parameters should then be
@@ -36,14 +40,14 @@ def PTSD(data:np.ndarray, threshold:float, refractory_period:float, peak_lifetim
     
     Returns
     -------
-    spikes_idxs : numpy.ndarray
+    spikes_idxs : ndarray
         An array containing all the indices of detected spikes.
-    spikes_values numpy.ndarray
+    spikes_values ndarray
         An array containing all the values (i.e. amplitude) of detected spikes.
     
     References
     ----------
-    [1] A. Maccione et al. “A novel algorithm for precise identification of spikes in extracellularly recorded neuronal signals.” Journal of neuroscience methods vol. 177,1 (2009): 241-9. https://doi.org/10.1016/j.jneumeth.2008.09.026
+    [1] Maccione, A., Gandolfo, M., Massobrio, P., Novellino, A., Martinoia, S., & Chiappalone, M. (2009). A novel algorithm for precise identification of spikes in extracellularly recorded neuronal signals. Journal of Neuroscience Methods, 177(1), 241–249. https://doi.org/10.1016/j.jneumeth.2008.09.026
     '''
     kwargs = _parse_kwargs(**kwargs)
     
@@ -53,10 +57,12 @@ def PTSD(data:np.ndarray, threshold:float, refractory_period:float, peak_lifetim
     overshoot = utils.get_in_samples(overshoot, kwargs.get('sampling_time'))
 
     # Cast data type to float
-    data = data.astype(np.float64)
+    data = data.astype(np.float64).squeeze()
+    
+    if kwargs.get('polarity') == -1:
+        data = -data
 
     spikes_idxs = []
-    spikes_values = []
 
     max_idxs = argrelmax(data)[0]
     max_values = data[max_idxs]
@@ -96,12 +102,13 @@ def PTSD(data:np.ndarray, threshold:float, refractory_period:float, peak_lifetim
             if abs(max_values[i] - min_value) >= threshold:
                 if len(spikes_idxs) == 0:
                     spikes_idxs.append(max_idxs[i])
-                    spikes_values.append(max_values[i])
                 elif abs(spikes_idxs[-1] - i) > refractory_period:
                     spikes_idxs.append(max_idxs[i])
-                    spikes_values.append(max_values[i])
+
+    if kwargs.get('polarity') == -1:
+        data = -data
 
     spikes_idxs = np.array(spikes_idxs, dtype=np.int64)
-    spikes_values = np.array(spikes_values, dtype=np.float64)
+    spikes_values = data[spikes_values].astype(np.float64)
     
     return spikes_idxs, spikes_values
