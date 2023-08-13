@@ -26,7 +26,7 @@ def SWTTEO(data:np.ndarray, sampling_time:float, **kwargs):
 
     Parameters
     ----------
-    data : numpy.ndarray
+    data : ndarray
         The array of recorded data.
     sampling_time : float
         The sampling time for the recorded data.
