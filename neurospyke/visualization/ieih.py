@@ -1,5 +1,6 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 from matplotlib.ticker import MaxNLocator
 from .. import utils
 
@@ -16,32 +17,51 @@ def _parse_kwargs(**kwargs):
         {'key': 'num', 'default': None, 'type': str},
         {'key': 'range', 'default': None, 'type': tuple},
         {'key': 'sampling_time', 'default': None, 'type': float},
-        {'key': 'title', 'default': 'ISI Histogram', 'type': str},
-        {'key': 'xlabel', 'default': 'ISI (s)' if kwargs.get('sampling_time', None) is not None else 'ISI (samples)', 'type': str},
+        {'key': 'title', 'default': 'IEI Histogram', 'type': str},
+        {'key': 'xlabel', 'default': 'IEI (s)' if kwargs.get('sampling_time', None) is not None else 'IEI (samples)', 'type': str},
         {'key': 'xlim', 'default': (0, None), 'type': tuple},
-        {'key': 'ylabel', 'default': 'Spikes Count', 'type': str},
+        {'key': 'ylabel', 'default': 'Events Count', 'type': str},
         {'key': 'ylim', 'default': (0, None), 'type': tuple}
     ]
     kwargs = utils.check_kwargs_list(kwargs_list, **kwargs)
 
     return kwargs
 
-def plot_ISIH(ISI, bins, **kwargs):
+def plot_IEIH(IEI:np.ndarray, bins:int = None, **kwargs):
+    '''
+    Plot an Inter-Event-Interval histogram, such as the Inter-Spike-Interval histogram.
+
+    Parameters
+    ----------
+    IEI : ndarray
+        The input Inter-Event-Interval to plot either in samples or in seconds.
+    bins : int, default=None
+        The number of equal-width bins for the histogram.
+    sampling_time : float, optional
+        The sampling time for the recorded data. If specified, the algorithm
+        will work in the time domain (the other parameters should then be
+        specified in seconds). Otherwise, it will work with samples.
+    '''
     kwargs = _parse_kwargs(**kwargs)
 
     plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
-    hist = np.histogram(ISI, bins=bins, range=kwargs.get('range'))
+
+    if bins is not None:
+        hist = np.histogram(IEI, bins=bins, range=kwargs.get('range'))
+    else:
+        hist = np.histogram(IEI, range=kwargs.get('range'))
+    
     bins = [(hist[1][i] + hist[1][i+1]) / 2 for i in range(np.size(hist[1]) - 1)]
-    spikes_count = hist[0]
+    events_count = hist[0]
 
     if kwargs.get('normalize') is True:
-        spikes_count = spikes_count/np.sum(spikes_count)
+        events_count = events_count/np.sum(events_count)
 
     if kwargs.get('barplot') is True:
-        plt.bar(bins, spikes_count, width=(bins[1] - bins[0]), align='edge', color=kwargs.get('color'))
+        plt.bar(bins, events_count, width=(bins[1] - bins[0]), align='edge', color=kwargs.get('color'))
     else:
-        plt.fill_between(bins, spikes_count, facecolor=kwargs.get('color'), alpha=kwargs.get('alpha'))
-        plt.plot(bins, spikes_count, linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
+        plt.fill_between(bins, events_count, facecolor=kwargs.get('color'), alpha=kwargs.get('alpha'))
+        plt.plot(bins, events_count, linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
 
     plt.title(kwargs.get('title'))
     plt.xlabel(kwargs.get('xlabel'))
