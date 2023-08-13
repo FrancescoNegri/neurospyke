@@ -40,8 +40,8 @@ def get_waveforms(data:np.ndarray, events:np.ndarray, **kwargs):
     '''
     kwargs = _parse_kwargs(**kwargs)
 
-    data.squeeze()
-    events.squeeze()
+    data = data.squeeze()
+    events = events.squeeze()
 
     if events.dtype == 'bool':
         events_idxs = utils.convert_train_to_idxs(events)
