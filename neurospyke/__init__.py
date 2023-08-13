@@ -1,3 +1,3 @@
-from . import bursts, lfp, spikes, utils, visualization
+from . import spikes, utils, visualization
 
-__all__ = ['bursts', 'lfp', 'spikes', 'utils', 'visualization']
+__all__ = ['spikes', 'utils', 'visualization']
