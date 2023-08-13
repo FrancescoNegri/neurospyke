@@ -11,29 +11,55 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def get_waveforms(data:np.ndarray, spikes:np.ndarray, **kwargs):
+def get_waveforms(data:np.ndarray, events:np.ndarray, **kwargs):
+    '''
+    Get the data surrounding certain set of events, according to a
+    specified window. This is useful for instance to obtain the waveforms
+    for all the spikes detected in a recording.
+
+    Parameters
+    ----------
+    data : ndarray
+        The array of recorded data.
+    events : ndarray
+        An array containing the events of interest. It can be express both
+        as a event train or as a list of the indices at which events occur.
+    window_length : float, optional
+        The length for the detection window to employ while isolating
+        events, expressed in seconds or samples.
+    sampling_time : float, optional
+        The sampling time for the recorded data. If specified, the algorithm
+        will work in the time domain (the other parameters should then be
+        specified in seconds). Otherwise, it will work with samples.
+
+    Returns
+    -------
+    waveforms : ndarray
+        A (2 x n_events) matrix where each row represents a different waveform surrounding
+        the specified events, according to the specified window.
+    '''
     kwargs = _parse_kwargs(**kwargs)
 
     data.squeeze()
-    spikes.squeeze()
+    events.squeeze()
 
-    if spikes.dtype == 'bool':
-        spikes_idxs = utils.convert_train_to_idxs(spikes)
+    if events.dtype == 'bool':
+        events_idxs = utils.convert_train_to_idxs(events)
     else:
-        spikes_idxs = spikes
+        events_idxs = events
 
     window_half_length = utils.get_in_samples(kwargs.get('window_length') / 2, kwargs.get('sampling_time'))
     
     windows_samples =  np.arange(-window_half_length, window_half_length)
-    windows_samples = np.tile(windows_samples, (np.size(spikes_idxs), 1))
+    windows_samples = np.tile(windows_samples, (np.size(events_idxs), 1))
 
-    spikes_idxs = np.tile(spikes_idxs, (np.size(windows_samples, axis=1), 1)).T
+    events_idxs = np.tile(events_idxs, (np.size(windows_samples, axis=1), 1)).T
     
-    windows_samples = windows_samples + spikes_idxs
+    windows_samples = windows_samples + events_idxs
 
     windows_samples = np.ravel(windows_samples)
 
     waveforms = data[windows_samples]
-    waveforms = np.reshape(waveforms, np.shape(spikes_idxs))
+    waveforms = np.reshape(waveforms, np.shape(events_idxs))
 
     return waveforms
