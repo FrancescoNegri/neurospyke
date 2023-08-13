@@ -29,7 +29,7 @@ def convert_train_to_idxs(train:np.ndarray):
 
 def convert_idxs_to_train(idxs:np.ndarray, duration:float = None, sampling_time:float = None):
     if duration is None:
-        train = np.zeros(idxs[-1], dtype=bool)
+        train = np.zeros(idxs[-1] + 1, dtype=bool)
     elif sampling_time is None:
         train = np.zeros(duration, dtype=bool)
     else:
