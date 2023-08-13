@@ -34,12 +34,12 @@ def plot_butterfly(data:np.ndarray, spikes:np.ndarray, **kwargs):
 
     Parameters
     ----------
-    data : numpy.ndarray
+    data : ndarray
         The array of recorded data.
-    spikes : numpy.ndarray
+    spikes : ndarray
         An array containing the detected spikes. It can be express both
         as a spike train or as a list of the indices at which spikes occur.
-    window_length : float
+    window_length : float, optional
         The length for the detection window to employ while plotting
         spikes, expressed in seconds or samples.
     sampling_time : float, optional
