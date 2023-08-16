@@ -24,10 +24,10 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def plot_butterfly(data:np.ndarray, spikes:np.ndarray, **kwargs):
+def plot_butterfly(data:np.ndarray, spikes:np.ndarray = None, **kwargs):
     '''
     Plot the so-called Butterfly Plot, displaying all the detected
-    spikes on the same axes.
+    spikes on the same axis.
     The spikes are centered in zero and a user-specified window is
     taken to visualize the spike shape before and after the event,
     with parameters specified either in the time domain or in samples.
@@ -35,8 +35,10 @@ def plot_butterfly(data:np.ndarray, spikes:np.ndarray, **kwargs):
     Parameters
     ----------
     data : ndarray
-        The array of recorded data.
-    spikes : ndarray
+        A (w x s) matrix of waveforms, where w is the number of spikes waveforms and
+        s represents the number the samples for each waveform. Otherwise, an array
+        containing the recorded data: in this case spikes must be specified as well.
+    spikes : ndarray, optional
         An array containing the detected spikes. It can be express both
         as a spike train or as a list of the indices at which spikes occur.
     window_length : float, optional
@@ -51,19 +53,25 @@ def plot_butterfly(data:np.ndarray, spikes:np.ndarray, **kwargs):
 
     # Cast data type to float
     data = data.astype(np.float64).squeeze()
-    spikes = spikes.squeeze()
 
-    if spikes.dtype == 'bool':
-        spikes_idxs = utils.convert_train_to_idxs(spikes)
+    if len(data.shape) == 1:
+        spikes = spikes.squeeze()
+
+        if spikes.dtype == 'bool':
+            spikes_idxs = utils.convert_train_to_idxs(spikes)
+        else:
+            spikes_idxs = spikes
+
+        waveforms = get_waveforms(data, spikes_idxs, **kwargs)
     else:
-        spikes_idxs = spikes
+        waveforms = data    
 
     plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
-    window_half_length = utils.get_in_samples(kwargs.get('window_length') / 2, kwargs.get('sampling_time'))
+    window_half_length = utils.get_in_samples(waveforms.shape[1] / 2, None)
     window_times = kwargs.get('sampling_time') * 1000 * np.arange(-window_half_length, window_half_length, 1) if kwargs.get('sampling_time') is not None else np.arange(-window_half_length, window_half_length, 1)
-    window_times = np.tile(window_times, (np.size(spikes_idxs), 1))
+    window_times = np.tile(window_times, (waveforms.shape[0], 1))
 
-    plt.plot(window_times.T, np.transpose(get_waveforms(data, spikes_idxs, **kwargs)), linewidth=kwargs.get('linewidth'))
+    plt.plot(window_times.T, waveforms.T, linewidth=kwargs.get('linewidth'))
 
     plt.title(kwargs.get('title'))
     plt.xlabel(kwargs.get('xlabel'))
