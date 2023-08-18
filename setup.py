@@ -18,7 +18,9 @@ INSTALL_REQUIRES = [
       'matplotlib',
       'numpy',
       'scipy',
-      'pywavelets'
+      'pywavelets',
+      'distinctipy',
+      'rich[jupyter]'
 ]
 
 setup(name=PACKAGE_NAME,
