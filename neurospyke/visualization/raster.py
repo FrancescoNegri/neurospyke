@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from matplotlib.colors import to_rgba
 from matplotlib.ticker import MaxNLocator
 from .. import utils
 
@@ -21,12 +22,12 @@ def _parse_kwargs(spikes_idxs, n_channels, **kwargs):
     kwargs_list = [
         {'key': 'ax', 'default': None, 'type': None},
         {'key': 'boxoff', 'default': True, 'type': bool},
-        {'key': 'channels_height', 'default': 0.8, 'type': float},
-        {'key': 'channels_labels', 'default': [str(i) for i in range(n_channels)], 'type': tuple},
+        {'key': 'channels_height', 'default': 0.9, 'type': float},
+        {'key': 'channels_labels', 'default': ['auto' for _ in range(n_channels)], 'type': tuple},
         {'key': 'color', 'default': ['black' for _ in range(n_channels)], 'type': list},
         {'key': 'dpi', 'default': 300, 'type': float},
-        {'key': 'figsize', 'default': (16, 0.25 * n_channels), 'type': tuple},
-        {'key': 'linewidth', 'default': 0.5, 'type': float},
+        {'key': 'figsize', 'default': (6, np.min([0.1 * n_channels, 3])), 'type': tuple},
+        {'key': 'linewidth', 'default': 0.25, 'type': float},
         {'key': 'num', 'default': None, 'type': str},
         {'key': 'sampling_time', 'default': None, 'type': float},
         {'key': 'title', 'default': 'Raster Plot', 'type': str},
@@ -41,8 +42,12 @@ def _parse_kwargs(spikes_idxs, n_channels, **kwargs):
     if (kwargs.get('channels_labels') is not None) and (len(kwargs.get('channels_labels')) != n_channels):
         raise ValueError("'channels_labels' expected to contain " + str(n_channels) + " elements, received " + str(len(kwargs.get('channels_labels'))))
     if len(kwargs.get('color')) != n_channels:
-        if len(kwargs.get('color')) == 1:
-            kwargs['color'] = [kwargs.get('color')[0] for _ in range(n_channels)]
+        if isinstance(kwargs.get('color')[0], str) and (len(kwargs.get('color')) == 1):
+            kwargs['color'] = [kwargs.get('color') for _ in range(n_channels)]
+        elif isinstance(kwargs.get('color'), (tuple, list)) and (len(kwargs.get('color')) in [3, 4]):
+            if len(kwargs.get('color')) == 3:
+                kwargs['color'] = to_rgba(kwargs.get('color'))
+            kwargs['color'] = [kwargs.get('color') for _ in range(n_channels)]
         else:
             raise ValueError("'color' expected to contain " + str(n_channels) + " elements, received " + str(len(kwargs.get('color'))))
     
@@ -69,6 +74,7 @@ def plot_raster(spikes, **kwargs):
             spikes[channel_idx] = utils.convert_train_to_idxs(spikes[channel_idx])
         
         spikes[channel_idx] = spikes[channel_idx].squeeze()
+        spikes[channel_idx] = np.array([spikes[channel_idx]]) if spikes[channel_idx].size == 1 else spikes[channel_idx]
         spikes[channel_idx] = kwargs.get('sampling_time') * spikes[channel_idx] if kwargs.get('sampling_time') is not None else spikes[channel_idx]
 
     spikes_idxs = spikes
@@ -81,11 +87,6 @@ def plot_raster(spikes, **kwargs):
     else:
         ax = kwargs.get('ax')
 
-    if kwargs.get('reverse'):
-        spikes_idxs = list(reversed(spikes_idxs))
-        kwargs['channels_labels'] =list(reversed(kwargs.get('channels_labels')))
-        kwargs['color'] = list(reversed(kwargs.get('color')))
-
     ax.eventplot(spikes_idxs, orientation='horizontal', linelengths=kwargs.get('channels_height'), linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
 
     ax.set_title(kwargs.get('title'))
@@ -94,17 +95,10 @@ def plot_raster(spikes, **kwargs):
 
     ax.set_xlim(kwargs.get('xlim'))
     
-    if kwargs.get('channels_labels') is not None:
-        if n_channels <= 10:
-            yticks = range(0, n_channels, 1)
-        elif (n_channels > 10) and (n_channels <= 50):
-            yticks = range(0, n_channels, 5)
-        else:
-            yticks = range(0, n_channels, 10)
-
-        if kwargs.get('reverse'):
-            yticks = [n_channels - item - 1 for item in yticks]
-
+    if np.all(np.array(kwargs.get('channels_labels')) == 'auto'):
+        pass
+    elif kwargs.get('channels_labels') is not None:
+        yticks = range(0, n_channels, 1)
         ax.set_yticks(yticks)
         ax.set_yticklabels([kwargs.get('channels_labels')[i] for i in yticks])
     else:
@@ -119,5 +113,8 @@ def plot_raster(spikes, **kwargs):
         ax.spines['right'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.tick_params(left=False) 
+
+    if kwargs.get('reversed') is True:
+        ax.invert_yaxis()
 
     return
