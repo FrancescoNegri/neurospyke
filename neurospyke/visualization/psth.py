@@ -1,18 +1,21 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
+from matplotlib.colors import to_rgba
 from matplotlib.ticker import MaxNLocator
 from .. import utils
 
 def _parse_kwargs(**kwargs):
     kwargs_list = [
         {'key': 'alpha', 'default': 0.25, 'type': float},
+        {'key': 'ax', 'default': None, 'type': None},
         {'key': 'barplot', 'default': False, 'type': bool},
         {'key': 'boxoff', 'default': True, 'type': bool},
-        {'key': 'color', 'default': '#1f77b4', 'type': str},
+        {'key': 'color', 'default': '#1f77b4', 'type': None},
         {'key': 'dpi', 'default': 100, 'type': float},
         {'key': 'figsize', 'default': (6, 3), 'type': tuple},
         {'key': 'linewidth', 'default': 2, 'type': float},
-        {'key': 'normalize', 'default': False, 'type': bool},
+        {'key': 'normalize', 'default': True, 'type': bool},
         {'key': 'num', 'default': None, 'type': str},
         {'key': 'sampling_time', 'default': None, 'type': float},
         {'key': 'title', 'default': 'PSTH Histogram', 'type': str},
@@ -25,20 +28,27 @@ def _parse_kwargs(**kwargs):
 
     return kwargs
 
-def plot_PSTH(spikes_count, window_length, **kwargs):
+def plot_PSTH(spikes_count, duration, **kwargs):
     kwargs = _parse_kwargs(**kwargs)
 
-    plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
-    bins = np.size(spikes_count, axis=0)
+    spikes_count.squeeze()
+    (n_trials, n_bins) = spikes_count.shape
+    spikes_count = np.sum(spikes_count, axis=0) 
+
+    if kwargs.get('ax') is None:
+        plt.figure(num=kwargs.get('num'), figsize=kwargs.get('figsize'), dpi=kwargs.get('dpi'))
+        kwargs['ax'] = plt.gca()
+    
+    ax = kwargs.get('ax')
 
     if kwargs.get('normalize') is True:
-        spikes_count = spikes_count/np.sum(spikes_count)
+        spikes_count = spikes_count / n_trials
     
     if kwargs.get('barplot') is True:
-        plt.bar(np.arange(bins), spikes_count, width=1, align='edge', color=kwargs.get('color'))
+        plt.bar(np.arange(n_bins), spikes_count, width=1, align='edge', color=kwargs.get('color'))
     else:
-        plt.fill_between(np.arange(bins), spikes_count, facecolor=kwargs.get('color'), alpha=kwargs.get('alpha'))
-        plt.plot(spikes_count, linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
+        plt.fill_between(np.arange(n_bins+1), np.insert(spikes_count, 0, 0), facecolor=to_rgba(kwargs.get('color'), kwargs.get('alpha')))
+        plt.plot(np.insert(spikes_count, 0, 0), linewidth=kwargs.get('linewidth'), color=kwargs.get('color'))
 
     plt.title(kwargs.get('title'))
     plt.xlabel(kwargs.get('xlabel'))
@@ -49,8 +59,8 @@ def plot_PSTH(spikes_count, window_length, **kwargs):
     ax.set_ylim(kwargs.get('ylim'))
 
     xticks = np.array(ax.get_xticks())
-    xticks_idxs = np.where(ax.get_xticks() <= bins)
-    xticklabels = np.array([np.round(label * window_length / bins, 5) for label in xticks])
+    xticks_idxs = np.where(ax.get_xticks() <= n_bins)
+    xticklabels = np.array([np.round(label * duration / n_bins, 5) for label in xticks])
     ax.set_xticks(xticks[xticks_idxs])
     ax.set_xticklabels(xticklabels[xticks_idxs])
 
