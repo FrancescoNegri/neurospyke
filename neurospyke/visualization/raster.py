@@ -105,6 +105,11 @@ def plot_raster(spikes, **kwargs):
         ax.set_yticks([])
         ax.set_yticklabels([])
 
+    xticklabels = np.array(ax.get_xticklabels())
+    xticklabels = [np.round(float(xticklabel.get_text()), 5) for xticklabel in xticklabels]
+    ax.set_xticks(ax.get_xticks())
+    ax.set_xticklabels(xticklabels)
+
     if kwargs.get('sampling_time') is None:
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
