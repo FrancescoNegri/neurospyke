@@ -5,10 +5,13 @@ def leader_follower(spikes):
     n_trains = len(spikes)
     pairs = [(n,m) for n in np.arange(n_trains) for m in np.arange(n_trains)]
 
-    D = np.zeros((n_trains, n_trains))
+    D = np.empty((n_trains, n_trains))
+    D.fill(np.nan)
 
     for n, m in pairs:
-        D[n, m] = _compute_D_n_m()
+        D[n, m] = _compute_D_n_m(spikes[n], spikes[m])
+
+    return D
 
 def _compute_D_n_m(reference_spike_train, target_spike_train):
     if reference_spike_train.size > 1 and target_spike_train.size > 1:
