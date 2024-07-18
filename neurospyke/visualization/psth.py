@@ -5,6 +5,12 @@ from matplotlib.colors import to_rgba
 from matplotlib.ticker import MaxNLocator
 from .. import utils
 
+def _parse_xlim(xlim, duration, n_bins):
+    if xlim[1] is not None:
+        xlim = (xlim[0], xlim[1] * n_bins / duration)
+    return xlim
+
+
 def _parse_kwargs(**kwargs):
     kwargs_list = [
         {'key': 'alpha', 'default': 0.25, 'type': float},
@@ -55,7 +61,7 @@ def plot_PSTH(spikes_count, duration, **kwargs):
     plt.ylabel(kwargs.get('ylabel'))
 
     ax = plt.gca()
-    ax.set_xlim(kwargs.get('xlim'))
+    ax.set_xlim(_parse_xlim(kwargs.get('xlim'), duration, n_bins))
     ax.set_ylim(kwargs.get('ylim'))
 
     xticks = np.array(ax.get_xticks())
