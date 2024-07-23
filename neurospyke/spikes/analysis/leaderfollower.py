@@ -1,15 +1,19 @@
 import numpy as np
+from joblib import Parallel, delayed
 from scipy.interpolate import interp1d
 
-def leader_follower(spikes):
+def leader_follower(spikes, n_jobs=-1):
     n_trains = len(spikes)
     pairs = [(n,m) for n in np.arange(n_trains) for m in np.arange(n_trains)]
 
     D = np.empty((n_trains, n_trains))
     D.fill(np.nan)
 
-    for n, m in pairs:
-        D[n, m] = _compute_D_n_m(spikes[n], spikes[m])
+    out = Parallel(n_jobs=n_jobs)(delayed(_compute_D_n_m)(spikes[n], spikes[m]) for n, m in pairs)
+    out = np.reshape(out, newshape=(n_trains, n_trains))
+
+    D[~np.isnan(out)] = out[~np.isnan(out)]
+    np.fill_diagonal(D, np.nan)
 
     return D
 
